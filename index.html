@@ -1,10 +1,169 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-    <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho de Compras com LocalStorage</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .products {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .product {
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #cart {
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    #cart-total {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Loja Online</h1>
+  
+  <!-- Lista de Produtos -->
+  <div class="products">
+    <div class="product">
+      <h3>Camiseta</h3>
+      <p>R$ 29.99</p>
+      <button onclick="addToCart('p1', 'Camiseta', 29.99)">Adicionar ao Carrinho</button>
+    </div>
+    <div class="product">
+      <h3>Calça Jeans</h3>
+      <p>R$ 89.99</p>
+      <button onclick="addToCart('p2', 'Calça Jeans', 89.99)">Adicionar ao Carrinho</button>
+    </div>
+    <div class="product">
+      <h3>Tênis</h3>
+      <p>R$ 120.00</p>
+      <button onclick="addToCart('p3', 'Tênis', 120.00)">Adicionar ao Carrinho</button>
+    </div>
+  </div>
 
-    <body>
+  <!-- Carrinho de Compras -->
+  <h2>Seu Carrinho</h2>
+  <div id="cart">
+    <div id="cart-items">
+      <!-- Itens do carrinho serão renderizados aqui via JavaScript -->
+    </div>
+    <div id="cart-total">Total: R$ 0.00</div>
+  </div>
 
-    </body>
+  <script>
+    // Constante para a chave do LocalStorage (evita erros de digitação)
+    const CART_KEY = 'shoppingCart';
+
+    // Variável que armazena os itens do carrinho (recupera do LocalStorage ou inicia vazio)
+    let cartItems = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+
+    /**
+     * Adiciona um produto ao carrinho ou incrementa a quantidade se já existir.
+     * @param {string} productId - ID único do produto
+     * @param {string} productName - Nome do produto
+     * @param {number} price - Preço unitário
+     * @param {number} [quantity=1] - Quantidade (opcional, padrão = 1)
+     */
+    function addToCart(productId, productName, price, quantity = 1) {
+      // Verifica se o produto já está no carrinho
+      const existingItem = cartItems.find(item => item.id === productId);
+
+      if (existingItem) {
+        existingItem.quantity += quantity; // Incrementa a quantidade
+      } else {
+        // Adiciona um novo item ao carrinho
+        cartItems.push({ id: productId, name: productName, price, quantity });
+      }
+
+      updateLocalStorage(); // Atualiza o LocalStorage
+      updateCartDisplay();  // Atualiza a exibição do carrinho
+    }
+
+    /**
+     * Remove um item do carrinho com base no ID.
+     * @param {string} productId - ID do produto a ser removido
+     */
+    function removeFromCart(productId) {
+      cartItems = cartItems.filter(item => item.id !== productId); // Filtra o item removido
+      updateLocalStorage();
+      updateCartDisplay();
+    }
+
+    /**
+     * Atualiza o LocalStorage com os itens atuais do carrinho.
+     */
+    function updateLocalStorage() {
+      localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
+    }
+
+    /**
+     * Calcula o valor total do carrinho.
+     * @returns {string} - Total formatado em Reais (R$)
+     */
+    function calculateTotal() {
+      const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      return `R$ ${total.toFixed(2)}`;
+    }
+
+    /**
+     * Renderiza os itens do carrinho na interface.
+     */
+    function updateCartDisplay() {
+      const cartElement = document.getElementById('cart-items');
+      cartElement.innerHTML = ''; // Limpa o carrinho antes de recarregar
+
+      if (cartItems.length === 0) {
+        cartElement.innerHTML = '<p>Seu carrinho está vazio.</p>';
+      } else {
+        cartItems.forEach(item => {
+          const itemElement = document.createElement('div');
+          itemElement.className = 'cart-item';
+          itemElement.innerHTML = `
+            <span>${item.name} - R$ ${item.price.toFixed(2)} x ${item.quantity}</span>
+            <button onclick="removeFromCart('${item.id}')">Remover</button>
+          `;
+          cartElement.appendChild(itemElement);
+        });
+      }
+
+      // Atualiza o total
+      document.getElementById('cart-total').textContent = `Total: ${calculateTotal()}`;
+    }
+
+    // Inicializa o carrinho ao carregar a página
+    document.addEventListener('DOMContentLoaded', updateCartDisplay);
+  </script>
+</body>
+</html>
