@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Carrinho de Compras com LocalStorage</title>
+
+  <link rel="Icon" href="https://i.pinimg.com/736x/8e/56/e7/8e56e7ed59a26cd472464cefe54825a8.jpg" type="image/png">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -15,12 +17,17 @@
       display: flex;
       gap: 20px;
       margin-bottom: 30px;
+      justify-content: center;
+      flex-wrap: wrap; /* Permite que os itens quebrem para a próxima linha */
     }
     .product {
       border: 1px solid #ddd;
       padding: 10px;
       border-radius: 5px;
-      text-align: center;
+      text-align: center; 
+      display: flex;
+      flex-direction: column;
+      align-items: center;  
     }
     button {
       background-color: #4CAF50;
@@ -37,10 +44,13 @@
       border: 1px solid #ddd;
       padding: 15px;
       border-radius: 5px;
+      max-width: 600px; 
+      margin: 0 auto; /* Centraliza o bloco do carrinho */
     }
     .cart-item {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 10px;
       padding-bottom: 10px;
       border-bottom: 1px solid #eee;
@@ -49,28 +59,53 @@
       font-weight: bold;
       margin-top: 10px;
     }
+
+    .centro {
+      text-align: center;
+    }
+
+    .tamanho{
+      font-size: 25px;
+    }
+
   </style>
 </head>
 <body>
-  <h1>Loja Online</h1>
+  <h1 class="centro">Loja Online</h1>
   
   <!-- Lista de Produtos -->
   <div class="products">
     <div class="product">
+      <img src="https://i.pinimg.com/736x/d3/47/43/d347434745d049b240fe7db553bab76a.jpg" alt="Camiseta preta" width="150">
       <h3>Camiseta</h3>
-      <p>R$ 29.99</p>
+      <p>R$ 49.99</p>
       <button onclick="addToCart('p1', 'Camiseta', 29.99)">Adicionar ao Carrinho</button>
     </div>
     <div class="product">
+      <img src="https://i.pinimg.com/736x/b1/26/69/b126691b479aa460be36fde8922bcea8.jpg" alt="Calça Jeans" width="150">
       <h3>Calça Jeans</h3>
       <p>R$ 89.99</p>
       <button onclick="addToCart('p2', 'Calça Jeans', 89.99)">Adicionar ao Carrinho</button>
     </div>
     <div class="product">
+      <img src="https://i.pinimg.com/736x/d0/0d/e3/d00de3f238bffdc6662ed0d86060b35f.jpg" alt="Tênis" width="150">
       <h3>Tênis</h3>
-      <p>R$ 120.00</p>
+      <p>R$ 150.00</p>
       <button onclick="addToCart('p3', 'Tênis', 120.00)">Adicionar ao Carrinho</button>
     </div>
+    <div class="product">
+      <img src="https://i.pinimg.com/736x/7f/2d/32/7f2d32d897967d25036f0b71ad829a16.jpg" alt="Moletom Preto" width="150">
+      <h3>Moletom</h3>
+      <p>R$ 199.99</p>
+      <button onclick="addToCart('p4', 'Moletom', 159.99)">Adicionar ao Carrinho</button>
+    </div>
+    <div class="product">
+      <img src="https://i.pinimg.com/736x/fd/fa/8d/fdfa8d8dd98c7ad339db9cdfba368ad2.jpg" alt="Colar" width="150">
+      <h3>Colar</h3>
+      <p>R$ 24.99</p>
+      <button onclick="addToCart('p5', 'Colar', 24.99)">Adicionar ao Carrinho</button>
+    </div>  
+  </div>
   </div>
 
   <!-- Carrinho de Compras -->
@@ -79,22 +114,23 @@
     <div id="cart-items">
       <!-- Itens do carrinho serão renderizados aqui via JavaScript -->
     </div>
-    <div id="cart-total">Total: R$ 0.00</div>
+    <div id="cart-total" class="tamanho">Total: R$ 0.00</div>
   </div>
 
   <script>
-    // Constante para a chave do LocalStorage (evita erros de digitação)
+    // *** CONSTANTE PARA LOCAL STORAGE ***
+    // Define a chave usada para armazenar o carrinho no Local Storage
+    // (evita erros de digitação ao acessar em diferentes partes do código)
     const CART_KEY = 'shoppingCart';
 
-    // Variável que armazena os itens do carrinho (recupera do LocalStorage ou inicia vazio)
+    // *** INICIALIZAÇÃO DO CARRINHO ***
+    // Recupera os itens do carrinho do Local Storage ou inicia um array vazio
+    // JSON.parse() converte a string JSON armazenada de volta para objeto JavaScript
     let cartItems = JSON.parse(localStorage.getItem(CART_KEY)) || [];
 
     /**
-     * Adiciona um produto ao carrinho ou incrementa a quantidade se já existir.
-     * @param {string} productId - ID único do produto
-     * @param {string} productName - Nome do produto
-     * @param {number} price - Preço unitário
-     * @param {number} [quantity=1] - Quantidade (opcional, padrão = 1)
+     * *** FUNÇÃO QUE MANIPULA LOCAL STORAGE ***
+     * Adiciona/atualiza um produto no carrinho
      */
     function addToCart(productId, productName, price, quantity = 1) {
       // Verifica se o produto já está no carrinho
@@ -103,46 +139,44 @@
       if (existingItem) {
         existingItem.quantity += quantity; // Incrementa a quantidade
       } else {
-        // Adiciona um novo item ao carrinho
+        // Adiciona novo item ao array cartItems
         cartItems.push({ id: productId, name: productName, price, quantity });
       }
 
-      updateLocalStorage(); // Atualiza o LocalStorage
-      updateCartDisplay();  // Atualiza a exibição do carrinho
+      updateLocalStorage(); // *** ATUALIZA LOCAL STORAGE ***
+      updateCartDisplay();  // Atualiza a exibição
     }
 
     /**
-     * Remove um item do carrinho com base no ID.
-     * @param {string} productId - ID do produto a ser removido
+     * *** FUNÇÃO QUE MANIPULA LOCAL STORAGE ***
+     * Remove um item do carrinho
      */
     function removeFromCart(productId) {
-      cartItems = cartItems.filter(item => item.id !== productId); // Filtra o item removido
-      updateLocalStorage();
+      // Filtra o array mantendo apenas itens com IDs diferentes do removido
+      cartItems = cartItems.filter(item => item.id !== productId);
+      
+      updateLocalStorage(); // *** ATUALIZA LOCAL STORAGE ***
       updateCartDisplay();
     }
 
     /**
-     * Atualiza o LocalStorage com os itens atuais do carrinho.
+     * *** FUNÇÃO PRINCIPAL DE LOCAL STORAGE ***
+     * Salva o estado atual do carrinho no Local Storage
+     * JSON.stringify() converte o array em string JSON para armazenamento
      */
     function updateLocalStorage() {
       localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
     }
 
-    /**
-     * Calcula o valor total do carrinho.
-     * @returns {string} - Total formatado em Reais (R$)
-     */
+    // *** FUNÇÕES AUXILIARES ***
     function calculateTotal() {
       const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
       return `R$ ${total.toFixed(2)}`;
     }
 
-    /**
-     * Renderiza os itens do carrinho na interface.
-     */
     function updateCartDisplay() {
       const cartElement = document.getElementById('cart-items');
-      cartElement.innerHTML = ''; // Limpa o carrinho antes de recarregar
+      cartElement.innerHTML = '';
 
       if (cartItems.length === 0) {
         cartElement.innerHTML = '<p>Seu carrinho está vazio.</p>';
@@ -152,18 +186,21 @@
           itemElement.className = 'cart-item';
           itemElement.innerHTML = `
             <span>${item.name} - R$ ${item.price.toFixed(2)} x ${item.quantity}</span>
+            <!-- *** EVENT LISTENER INLINE *** 
+                 O onclick chama removeFromCart() diretamente -->
             <button onclick="removeFromCart('${item.id}')">Remover</button>
           `;
           cartElement.appendChild(itemElement);
         });
       }
 
-      // Atualiza o total
       document.getElementById('cart-total').textContent = `Total: ${calculateTotal()}`;
     }
 
-    // Inicializa o carrinho ao carregar a página
+    // *** EVENT LISTENER GLOBAL ***
+    // Executa updateCartDisplay() quando o DOM estiver totalmente carregado
+    // Isso garante que o carrinho seja exibido mesmo após refresh da página
     document.addEventListener('DOMContentLoaded', updateCartDisplay);
-  </script>
+</script>
 </body>
 </html>
