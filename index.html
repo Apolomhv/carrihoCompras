@@ -59,58 +59,116 @@
       font-weight: bold;
       margin-top: 10px;
     }
-
     .centro {
       text-align: center;
     }
-
     .tamanho{
       font-size: 25px;
+    }
+    .fundo{
+      background-color: #FFFFFF;
+    }
+
+    .click-counter {
+      font-size: 0.8em;
+      color: #666;
+      margin: 5px 0;
+      font-style: italic;
+    }
+
+    /* Estilos do botão de tema */
+    .theme-btn {
+      background-color: #333;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin: 10px auto;
+      display: block;
+      transition: all 0.3s ease;
+    }
+
+    /* Estilos para o modo escuro */
+    body.dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    body.dark-mode .fundo,
+    body.dark-mode #cart,
+    body.dark-mode .product {
+      background-color: #1e1e1e !important;
+      color: #ffffff;
+      border-color: #444;
+    }
+
+    body.dark-mode button:not(.theme-btn) {
+      background-color: #4CAF50;
+    }
+
+    body.dark-mode .cart-item {
+      border-bottom-color: #444;
+    }
+
+    body.dark-mode .click-counter {
+      color: #aaa;
     }
 
   </style>
 </head>
-<body>
+<body class="transparencia">
   <h1 class="centro">Loja Online</h1>
+  <button id="themeToggle" class="theme-btn">🌙 Modo Escuro</button>
   
   <!-- Lista de Produtos -->
   <div class="products">
-    <div class="product">
+    <div class="product fundo">
       <img src="https://i.pinimg.com/736x/d3/47/43/d347434745d049b240fe7db553bab76a.jpg" alt="Camiseta preta" width="150">
       <h3>Camiseta</h3>
       <p>R$ 49.99</p>
-      <button onclick="addToCart('p1', 'Camiseta', 29.99)">Adicionar ao Carrinho</button>
+      <div class="click-counter" id="counter-p1">Adicionado 0 vezes</div>
+      <button onclick="addToCart('p1', 'Camiseta', 49.99)">Adicionar ao Carrinho</button>
     </div>
-    <div class="product">
+
+    <div class="product fundo">
       <img src="https://i.pinimg.com/736x/b1/26/69/b126691b479aa460be36fde8922bcea8.jpg" alt="Calça Jeans" width="150">
       <h3>Calça Jeans</h3>
       <p>R$ 89.99</p>
+      <div class="click-counter" id="counter-p2">Adicionado 0 vezes</div>
       <button onclick="addToCart('p2', 'Calça Jeans', 89.99)">Adicionar ao Carrinho</button>
     </div>
-    <div class="product">
+
+    <div class="product fundo">
       <img src="https://i.pinimg.com/736x/d0/0d/e3/d00de3f238bffdc6662ed0d86060b35f.jpg" alt="Tênis" width="150">
       <h3>Tênis</h3>
       <p>R$ 150.00</p>
+      <div class="click-counter" id="counter-p3">Adicionado 0 vezes</div>
       <button onclick="addToCart('p3', 'Tênis', 120.00)">Adicionar ao Carrinho</button>
     </div>
-    <div class="product">
+    
+    <div class="product fundo">
       <img src="https://i.pinimg.com/736x/7f/2d/32/7f2d32d897967d25036f0b71ad829a16.jpg" alt="Moletom Preto" width="150">
       <h3>Moletom</h3>
       <p>R$ 199.99</p>
+      <div class="click-counter" id="counter-p4">Adicionado 0 vezes</div>
       <button onclick="addToCart('p4', 'Moletom', 159.99)">Adicionar ao Carrinho</button>
     </div>
-    <div class="product">
+
+    <div class="product fundo">
       <img src="https://i.pinimg.com/736x/fd/fa/8d/fdfa8d8dd98c7ad339db9cdfba368ad2.jpg" alt="Colar" width="150">
       <h3>Colar</h3>
       <p>R$ 24.99</p>
+      <div class="click-counter" id="counter-p5">Adicionado 0 vezes</div>
       <button onclick="addToCart('p5', 'Colar', 24.99)">Adicionar ao Carrinho</button>
-    </div>  
+    </div> 
+
   </div>
   </div>
 
   <!-- Carrinho de Compras -->
-  <h2>Seu Carrinho</h2>
-  <div id="cart">
+  <h2 class="centro">Seu Carrinho</h2>
+  <div id="cart" class="fundo">
     <div id="cart-items">
       <!-- Itens do carrinho serão renderizados aqui via JavaScript -->
     </div>
@@ -130,22 +188,52 @@
 
     /**
      * *** FUNÇÃO QUE MANIPULA LOCAL STORAGE ***
-     * Adiciona/atualiza um produto no carrinho
-     */
-    function addToCart(productId, productName, price, quantity = 1) {
-      // Verifica se o produto já está no carrinho
-      const existingItem = cartItems.find(item => item.id === productId);
+     * Adiciona/atualiza um produto no carrinho */
 
-      if (existingItem) {
-        existingItem.quantity += quantity; // Incrementa a quantidade
-      } else {
-        // Adiciona novo item ao array cartItems
-        cartItems.push({ id: productId, name: productName, price, quantity });
+     // Objeto para armazenar os contadores
+      const productCounters = {
+        p1: 0,
+        p2: 0,
+        p3: 0,
+        p4: 0,
+        p5: 0
+      };
+
+      // Função para atualizar contador
+      function updateCounter(productId) {
+        const counterElement = document.getElementById(`counter-${productId}`);
+          if (counterElement) {
+            counterElement.textContent = `Adicionado ${productCounters[productId]} vezes`;
+        }
       }
 
-      updateLocalStorage(); // *** ATUALIZA LOCAL STORAGE ***
-      updateCartDisplay();  // Atualiza a exibição
-    }
+      function addToCart(productId, productName, price, quantity = 1) {
+        productCounters[productId]++; // Incrementa o contador
+        updateCounter(productId); // Atualiza a exibição
+  
+          const existingItem = cartItems.find(item => item.id === productId);
+            if (existingItem) {
+              existingItem.quantity += quantity;
+            } else {
+              cartItems.push({ id: productId, name: productName, price, quantity });
+              }
+  
+        updateLocalStorage();
+        updateCartDisplay();
+      }
+
+      // No DOMContentLoaded, inicialize os contadores
+        document.addEventListener('DOMContentLoaded', () => {
+          updateCartDisplay();
+          checkSavedTheme();
+
+          // Inicializa contadores baseado nos itens já no carrinho
+        cartItems.forEach(item => {
+          productCounters[item.id] = item.quantity;
+            updateCounter(item.id);
+          });
+        });
+
 
     /**
      * *** FUNÇÃO QUE MANIPULA LOCAL STORAGE ***
@@ -166,7 +254,12 @@
      */
     function updateLocalStorage() {
       localStorage.setItem(CART_KEY, JSON.stringify(cartItems));
-    }
+      localStorage.setItem('productCounters', JSON.stringify(productCounters));
+        const savedCounters = JSON.parse(localStorage.getItem('productCounters'));
+          if (savedCounters) {
+            Object.assign(productCounters, savedCounters);
+          }
+        }
 
     // *** FUNÇÕES AUXILIARES ***
     function calculateTotal() {
@@ -201,6 +294,42 @@
     // Executa updateCartDisplay() quando o DOM estiver totalmente carregado
     // Isso garante que o carrinho seja exibido mesmo após refresh da página
     document.addEventListener('DOMContentLoaded', updateCartDisplay);
+
+    // Constante para armazenar a preferência de tema
+    const THEME_KEY = 'preferredTheme';
+
+    // Elementos do DOM
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+
+    // Verifica o tema salvo ao carregar a página
+    function checkSavedTheme() {
+      const savedTheme = localStorage.getItem(THEME_KEY);
+        if (savedTheme === 'dark') {
+          body.classList.add('dark-mode');
+          themeToggle.textContent = '☀️ Modo Claro';
+        }
+    }
+
+    // Alterna entre temas
+    function toggleTheme() {
+      body.classList.toggle('dark-mode');
+  
+        if (body.classList.contains('dark-mode')) {
+          localStorage.setItem(THEME_KEY, 'dark');
+          themeToggle.textContent = '☀️ Modo Claro';
+        } else {
+          localStorage.setItem(THEME_KEY, 'light');
+          themeToggle.textContent = '🌙 Modo Escuro';
+        }
+    }
+
+    // Event Listener para o botão
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // Verifica o tema ao carregar a página
+    document.addEventListener('DOMContentLoaded', checkSavedTheme);
+
 </script>
 </body>
 </html>
