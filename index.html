@@ -76,6 +76,11 @@
       font-style: italic;
     }
 
+    .buttonred { 
+      background-color: #611919ec;
+      color: rgb(0, 0, 0);
+    }
+
     /* Estilos do botão de tema */
     .theme-btn {
       background-color: #333;
@@ -115,9 +120,15 @@
       color: #aaa;
     }
 
+    body.dark-mode .buttonred:not(.theme-btn) { 
+      background-color: #611919ec;
+      color: rgb(0, 0, 0);
+    }
+
+
   </style>
 </head>
-<body class="transparencia">
+<body>
   <h1 class="centro">Loja Online</h1>
   <button id="themeToggle" class="theme-btn">🌙 Modo Escuro</button>
   
@@ -128,6 +139,8 @@
       <h3>Camiseta</h3>
       <p>R$ 49.99</p>
       <div class="click-counter" id="counter-p1">Adicionado 0 vezes</div>
+      <button class= "buttonred" onclick ="( )">Remover um contador</button>
+      <br>
       <button onclick="addToCart('p1', 'Camiseta', 49.99)">Adicionar ao Carrinho</button>
     </div>
 
@@ -136,6 +149,8 @@
       <h3>Calça Jeans</h3>
       <p>R$ 89.99</p>
       <div class="click-counter" id="counter-p2">Adicionado 0 vezes</div>
+      <button class= "buttonred" onclick ="( )">Remover um contador</button>
+      <br>
       <button onclick="addToCart('p2', 'Calça Jeans', 89.99)">Adicionar ao Carrinho</button>
     </div>
 
@@ -144,6 +159,8 @@
       <h3>Tênis</h3>
       <p>R$ 150.00</p>
       <div class="click-counter" id="counter-p3">Adicionado 0 vezes</div>
+      <button class= "buttonred" onclick ="( )">Remover um contador</button>
+      <br>
       <button onclick="addToCart('p3', 'Tênis', 120.00)">Adicionar ao Carrinho</button>
     </div>
     
@@ -152,6 +169,8 @@
       <h3>Moletom</h3>
       <p>R$ 199.99</p>
       <div class="click-counter" id="counter-p4">Adicionado 0 vezes</div>
+      <button class= "buttonred" onclick ="( )">Remover um contador</button>
+      <br>
       <button onclick="addToCart('p4', 'Moletom', 159.99)">Adicionar ao Carrinho</button>
     </div>
 
@@ -160,6 +179,8 @@
       <h3>Colar</h3>
       <p>R$ 24.99</p>
       <div class="click-counter" id="counter-p5">Adicionado 0 vezes</div>
+      <button class= "buttonred" onclick ="removeCounter('p5')">Remover um contador</button>
+      <br>
       <button onclick="addToCart('p5', 'Colar', 24.99)">Adicionar ao Carrinho</button>
     </div> 
 
@@ -206,6 +227,14 @@
             counterElement.textContent = `Adicionado ${productCounters[productId]} vezes`;
         }
       }
+
+      //function removeCounter(productId) {
+      //  const counterElement = document.getElementById(`counter-${productId}`);
+      //  if (counterElement) {
+      //    counterElement.textContent = `Adicionado ${productCounters[productId]} vezes`;
+      //  }
+      //}
+
 
       function addToCart(productId, productName, price, quantity = 1) {
         productCounters[productId]++; // Incrementa o contador
